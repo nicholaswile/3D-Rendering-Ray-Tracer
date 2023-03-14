@@ -143,10 +143,16 @@ float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, flo
     if (closestSphere == NULL) {
         return new float[3] BACKGROUNDCOLOR;
     }
-
+    
     return (*closestSphere).color;
 }
 
+void DrawPixel(HDC hdc, int viewportX, int viewportY, float color[3]) {
+    int screenX = SCREENWIDTH / 2 + viewportX;
+    int screenY = SCREENHEIGHT / 2 - viewportY;
+    SetPixel(hdc, screenX, screenY, RGB(color[0], color[1], color[2]));
+
+}
 
 
 int main()
@@ -158,20 +164,23 @@ int main()
 
     HDC hdc = GetDC(GetConsoleWindow());
 
-    Sphere sphere1 = Sphere(new float[3] { 255.0f, 0.0f, 0.0f }, 1.0f, new float[3] { 0.0f, -1.0f, 3.0f });
-    Sphere sphere2 = Sphere(new float[3] { 0.0f, 255.0f, 0.0f }, 1.0f, new float[3] { -2.0f, 0.0f, 4.0f });
-    Sphere sphere3 = Sphere(new float[3] { 0.0f, 0.0f, 255.0f }, 1.0f, new float[3] { 2.0f, 0.0f, 4.0f });
 
-    spheresInScene.push_back(sphere1);
-    spheresInScene.push_back(sphere2);
-    spheresInScene.push_back(sphere3);
+   Sphere sphere1 = Sphere(new float[3] { 255.0f, 0.0f, 0.0f }, 1.0f, new float[3] { 0.0f, -1.0f, 3.0f });
+   Sphere sphere2 = Sphere(new float[3] { 0.0f, 255.0f, 0.0f }, 1.0f, new float[3] { -2.0f, 0.0f, 4.0f });
+   Sphere sphere3 = Sphere(new float[3] { 0.0f, 0.0f, 255.0f }, 1.0f, new float[3] { 1.0f, 0.0f, 4.0f });
 
+   spheresInScene.push_back(sphere1);
+   spheresInScene.push_back(sphere2);
+   spheresInScene.push_back(sphere3);
 
-    for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
-        for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
-            memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
-            memcpy(color, TraceRay(camera.GetPosition(), projectionCoord, 1, MAXFLOAT), sizeof(color));
-            SetPixel(hdc, x, y, RGB(color[0], color[1], color[2]));
+    while (true) {
+        for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
+            for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
+                memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
+                memcpy(color, TraceRay(camera.GetPosition(), projectionCoord, 1, MAXFLOAT), sizeof(color));
+                DrawPixel(hdc, x, y, color);
+            }
         }
-    }  
+    }
+    
 }
