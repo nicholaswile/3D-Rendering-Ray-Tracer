@@ -1,5 +1,5 @@
 #pragma once
-#define SCREENWIDTH 1920
+#define SCREENWIDTH 1080
 #define SCREENHEIGHT 1080
 
 class Camera {

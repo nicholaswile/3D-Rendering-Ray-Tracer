@@ -9,7 +9,7 @@
 #include "Sphere.h"
 #include "Camera.h"
 
-#define SCREENWIDTH 1920
+#define SCREENWIDTH 1080
 #define SCREENHEIGHT 1080
 #define MAXFLOAT 4294967296.0f
 #define BACKGROUNDCOLOR {255, 255, 255}
