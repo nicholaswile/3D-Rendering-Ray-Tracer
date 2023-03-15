@@ -2,7 +2,6 @@
 //
 
 #include <windows.h> // gives ConsoleWindow and SetPixel
-#include <list> // gives std::list<Type>
 #include <math.h> // gives sqrt()
 
 #include "Scene.h"
@@ -74,8 +73,8 @@ float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphe
         return new float[2] {MAXFLOAT, MAXFLOAT};
     }
     // Quadratic formula to find two positions where the ray intersects the sphere
-    param_t1 = (-coeff_b + sqrt(discriminant)) / 2 * coeff_a;
-    param_t2 = (-coeff_b - sqrt(discriminant)) / 2 * coeff_a;
+    param_t1 = (-coeff_b + (float)sqrt(discriminant)) / 2.0f * coeff_a;
+    param_t2 = (-coeff_b - (float)sqrt(discriminant)) / 2.0f * coeff_a;
 
     return new float[2] {param_t1, param_t2};
 }
@@ -129,14 +128,11 @@ int main()
     float projectionCoord[3]; // the coords of the viewport in the scene
     float color[3] = { 0, 0, 0 };
     
-   // while (true) {
-        for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
-            for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
-                memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
-                memcpy(color, TraceRay(camera.GetPosition(), projectionCoord, 1, MAXFLOAT, scene), sizeof(color));
-                DrawPixel(hdc, x, y, color);
-            }
+    for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
+        for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
+            memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
+            memcpy(color, TraceRay(camera.GetPosition(), projectionCoord, 1, MAXFLOAT, scene), sizeof(color));
+            DrawPixel(hdc, x, y, color);
         }
-    //}
-    
+    }
 }
