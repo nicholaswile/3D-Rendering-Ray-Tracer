@@ -23,6 +23,37 @@ float VectorDotProduct(float vector1[3], float vector2[3]) {
 }
 
 // Determines at what point(s) the ray intersects the sphere
+
+// Vector V = PointOnSphere P - SphereCenter C
+// Radius = | V | = sqrt ( VectorDotProduct (V, V) )
+// => Radius^2 = VectorDotProduct (V, V) = VectorDotProduct (P - C, P - C)
+
+// RayDirection = SecondPointRayPassesThru - FirstPointRayPassesThru
+//              = ViewportPoint - CameraPoint 
+// PointOnRay = PointThatRayPassesThru + Parameter_t * RayDirection
+// PointOnRay = CameraPosition + Parameter_t * RayDirection
+
+// Want to know Parameter_t when PointOnRay = PointOnSphere,
+// Radius^2 = Dot (PointOnSphere - SphereCenter, PointOnSpherePoint - SphereCenter) 
+// 
+// Sub PointOnRay for PointOnSphere
+// => Radius^2 = Dot ( CameraPosition + Parameter_t * RayDirection - SphereCenter, Again )
+// 
+// CamToSphereCenter = CameraPosition - SphereCenter
+// => Radius^2 = Dot (
+    // CamToSphereCenter + Parameter_t * RayDirection, 
+    // CamToSphereCenter + Parameter_t * RayDirection
+    // )
+
+// => Radius^2 = Dot (CamToSphereCenter + Parameter_t * RayDirection, CamToSphereCenter) + 
+    // Dot (CamToSphereCenter + Paramter_t * RayDirection, Parameter_t * RayDirection)
+
+// => Radius^2 = Dot (CamToSphereCenter, CamToSphereCenter) + Dot (CamToSphereCenter, Parameter_t*RayDir) + Dot (CamToSphereCenter, Parameter_t*RayDir) + Dot(Parameter_t*RayDir, Parameter_t*RayDir)
+
+// => 0 = - Radius^2 + Dot (Cam, Cam) + 2*Parameter_t*Dot (Cam, Dir) + Parameter_t^2*Dot (Dir, Dir)
+
+// Quadratic forumla : 0 = a(t^2) + b(t) + c, solve for t to find where P = P
+
 float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphere) {
     float radius;
     float camToSphere[3];
@@ -30,7 +61,7 @@ float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphe
     float param_t1, param_t2;
 
     radius = sphere.radius;
-
+    
     memcpy(camToSphere, VectorDirection(cameraPos, sphere.center), sizeof(camToSphere));
     
     coeff_a = VectorDotProduct(rayDirection, rayDirection);
@@ -42,7 +73,6 @@ float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphe
     if (discriminant < 0) {
         return new float[2] {MAXFLOAT, MAXFLOAT};
     }
-
     // Quadratic formula to find two positions where the ray intersects the sphere
     param_t1 = (-coeff_b + sqrt(discriminant)) / 2 * coeff_a;
     param_t2 = (-coeff_b - sqrt(discriminant)) / 2 * coeff_a;
@@ -53,27 +83,44 @@ float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphe
 // Determine color of ray passing through the viewport position seen from the camera position
 float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene) {
     float closestParam = MAXFLOAT;
-    float parameters[2];
+    float param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
+    float parameters[2] = { param_t1, param_t2 };
 
-    Sphere * closestSphere = NULL;
+    Sphere* closestSphere = NULL;
 
+    float red = 0.0f, green = 0.0f, blue = 0.0f;
+
+    int i = 0;
     for (Sphere sphere : scene.spheresInScene) {
         memcpy(parameters, IntersectRaySphere(cameraPos, rayDirection, sphere), sizeof(parameters));
-        float param_t1 = parameters[0], param_t2 = parameters[1];
-        if (param_t1 >= min_param && param_t1 <= max_param && param_t1 < closestParam) {
+        param_t1 = parameters[0], param_t2 = parameters[1];
+        i++;
+        if (param_t1 > min_param && param_t1 < max_param && param_t1 < closestParam) {
+
             closestParam = param_t1;
             closestSphere = &sphere;
+            red = sphere.color[0];
+            green = sphere.color[1];
+            blue = sphere.color[2];
         }
-        if (param_t2 >= min_param && param_t2 <= max_param && param_t2 < closestParam) {
+        if (param_t2 > min_param && param_t2 < max_param && param_t2 < closestParam) {
+
             closestParam = param_t2;
             closestSphere = &sphere;
+            red = sphere.color[0];
+            green = sphere.color[1];
+            blue = sphere.color[2];
         }
+        
     }
+    
     if (closestSphere == NULL) {
         return new float[3] BACKGROUNDCOLOR;
     }
     
-    return (*closestSphere).color;
+    if (closestSphere != NULL) {
+        return new float [3] {red, green, blue};
+    }
 }
 
 void DrawPixel(HDC hdc, int viewportX, int viewportY, float color[3]) {
@@ -81,7 +128,6 @@ void DrawPixel(HDC hdc, int viewportX, int viewportY, float color[3]) {
     int screenY = SCREENHEIGHT / 2 - viewportY;
     SetPixel(hdc, screenX, screenY, RGB(color[0], color[1], color[2]));
 }
-
 
 int main()
 {
@@ -93,7 +139,7 @@ int main()
     float projectionCoord[3]; // the coords of the viewport in the scene
     float color[3] = { 0, 0, 0 };
     
-    while (true) {
+   // while (true) {
         for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
             for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
                 memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
@@ -101,6 +147,6 @@ int main()
                 DrawPixel(hdc, x, y, color);
             }
         }
-    }
+    //}
     
 }

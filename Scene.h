@@ -1,10 +1,10 @@
 #pragma once
 
-#include <list>
+#include <vector>
 #include "Sphere.h"
 
 class Scene {
 public:
-    std::list<Sphere> spheresInScene;
+    std::vector<Sphere> spheresInScene;
     void CreateScene();
 }; 
