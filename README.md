@@ -2,4 +2,4 @@
 
 This is a work in progress. So far parameterized spheres are rendered with flat colors. I plan to add lighting, shadows, and reflections.
 
-![image](https://user-images.githubusercontent.com/74445404/225228765-1c376a00-37b7-4d92-87ad-cda70887c6a5.png)
+<img width="583" alt="Three flat shaded spheres, one blue, one pink, and one purple, displayed on a Windows console." src="https://user-images.githubusercontent.com/74445404/225229690-5caf386b-8999-445a-b5bb-bc3540a1ee8d.png">
