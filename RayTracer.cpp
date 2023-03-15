@@ -12,7 +12,7 @@
 #define SCREENWIDTH 1080
 #define SCREENHEIGHT 1080
 #define MAXFLOAT 4294967296.0f
-#define BACKGROUNDCOLOR {255, 255, 255}
+#define BACKGROUNDCOLOR {0, 0, 0}
 
 float * VectorDirection(float vector1[3], float vector2[3]) {
     return new float[3] {vector1[0] - vector2[0], vector1[1] - vector2[1], vector1[2] - vector2[2]};
@@ -22,6 +22,7 @@ float VectorDotProduct(float vector1[3], float vector2[3]) {
     return vector1[0] * vector2[0] + vector1[1] * vector2[1] + vector1[2] * vector2[2];
 }
 
+// Determines at what point(s) the ray intersects the sphere
 float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphere) {
     float radius;
     float camToSphere[3];
@@ -49,6 +50,7 @@ float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphe
     return new float[2] {param_t1, param_t2};
 }
 
+// Determine color of ray passing through the viewport position seen from the camera position
 float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene) {
     float closestParam = MAXFLOAT;
     float parameters[2];

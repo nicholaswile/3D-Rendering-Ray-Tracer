@@ -39,11 +39,12 @@ public:
     void SetViewportDistance(float d) {
         m_viewportDistance = d;
     }
+    // Given canvas coordinates of the current pixel, determine corresponding position in viewport (space)
     float* CanvasToViewport(int canvasX, int canvasY) {
         return new float[3] {
             canvasX* m_viewportWidth / SCREENWIDTH,
-                canvasY* m_viewportHeight / SCREENHEIGHT,
-                m_viewportDistance
+            canvasY* m_viewportHeight / SCREENHEIGHT,
+            m_viewportDistance
         };
     }
 private:
