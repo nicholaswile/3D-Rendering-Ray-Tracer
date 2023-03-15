@@ -88,39 +88,29 @@ float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, flo
 
     Sphere* closestSphere = NULL;
 
-    float red = 0.0f, green = 0.0f, blue = 0.0f;
+    // If no circle is intersected by a ray, then return the background color
+    // Else, return the color of the closest circle to the camera at that point in the viewport
+    float closestColor[3] = BACKGROUNDCOLOR;
 
     int i = 0;
-    for (Sphere sphere : scene.spheresInScene) {
+    for (const Sphere &sphere : scene.spheresInScene) {
         memcpy(parameters, IntersectRaySphere(cameraPos, rayDirection, sphere), sizeof(parameters));
         param_t1 = parameters[0], param_t2 = parameters[1];
         i++;
         if (param_t1 > min_param && param_t1 < max_param && param_t1 < closestParam) {
 
             closestParam = param_t1;
-            closestSphere = &sphere;
-            red = sphere.color[0];
-            green = sphere.color[1];
-            blue = sphere.color[2];
+            memcpy (closestColor, sphere.color, sizeof(closestColor));
         }
         if (param_t2 > min_param && param_t2 < max_param && param_t2 < closestParam) {
 
             closestParam = param_t2;
-            closestSphere = &sphere;
-            red = sphere.color[0];
-            green = sphere.color[1];
-            blue = sphere.color[2];
+            memcpy(closestColor, sphere.color, sizeof(closestColor));
         }
         
     }
     
-    if (closestSphere == NULL) {
-        return new float[3] BACKGROUNDCOLOR;
-    }
-    
-    if (closestSphere != NULL) {
-        return new float [3] {red, green, blue};
-    }
+    return closestColor;
 }
 
 void DrawPixel(HDC hdc, int viewportX, int viewportY, float color[3]) {
