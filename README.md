@@ -6,7 +6,7 @@ This is a work in progress. Each branch represents a different basic feature of 
 ### Specular 
 Up next after I fix diffuse reflections. 
 
-### Diffuse (done)
+### Diffuse
 Ambient, point, and directional light reflections are implemented. 
 
 <img width="400" alt="Three spheres with diffuse lighting. They look 3D now." src="https://user-images.githubusercontent.com/74445404/226056722-219a84e7-3642-4a58-9305-8df862eaae81.png">
