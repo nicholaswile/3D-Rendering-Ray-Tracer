@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_RayTracing_FlatColors", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0B330519-22ED-40EF-899D-A13AE4913C50}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_RayTracing_Lighting", "..\RayTracer_Light\RayTracer_Light.vcxproj", "{650BB850-B70A-4FF8-BFA2-2389CD2330DF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -25,14 +23,6 @@ Global
 		{5D033067-8077-4A48-815F-4649593B5C13}.Release|x64.Build.0 = Release|x64
 		{5D033067-8077-4A48-815F-4649593B5C13}.Release|x86.ActiveCfg = Release|Win32
 		{5D033067-8077-4A48-815F-4649593B5C13}.Release|x86.Build.0 = Release|Win32
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Debug|x64.ActiveCfg = Debug|x64
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Debug|x64.Build.0 = Debug|x64
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Debug|x86.ActiveCfg = Debug|Win32
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Debug|x86.Build.0 = Debug|Win32
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Release|x64.ActiveCfg = Release|x64
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Release|x64.Build.0 = Release|x64
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Release|x86.ActiveCfg = Release|Win32
-		{650BB850-B70A-4FF8-BFA2-2389CD2330DF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
