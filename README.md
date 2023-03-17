@@ -10,7 +10,7 @@ Up next after I fix diffuse reflections.
 Ambient, point, and directional light reflections are implemented. 
 <img width="589" alt="image" src="https://user-images.githubusercontent.com/74445404/226056722-219a84e7-3642-4a58-9305-8df862eaae81.png">
 
-There are some weird deformations with the spheres. [Fixed]
+There are some weird deformations with the spheres. (Fixed)
 <img width="455" alt="image" src="https://user-images.githubusercontent.com/74445404/225863027-b5810131-a25b-4c0c-a792-f445967d8d31.png">
 
 ### Ambient only 
