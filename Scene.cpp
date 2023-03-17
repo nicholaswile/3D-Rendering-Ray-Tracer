@@ -1,5 +1,4 @@
 #include "Scene.h"
-#include <iostream>
 
 void Scene::CreateScene() {
     
@@ -15,4 +14,14 @@ void Scene::CreateScene() {
     Sphere sphere4(new float[3] {255 / 3, 255 / 3, 255 / 3}, 5000, new float[3] {0, -5001, 0});
     spheresInScene.push_back(sphere4);
     
+    //-------------------------------------------------------------------------------------------------
+    
+    AmbientLight light1(0.2f);
+    lightsInScene.push_back(light1);
+
+    PointLight light2(0.6, new float[3] {2, 1, 0});
+    lightsInScene.push_back(light2);
+
+    DirectionalLight light3(0.2, new float[3] {1, 4, 4});
+    lightsInScene.push_back(light3);
 }

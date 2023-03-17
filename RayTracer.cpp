@@ -7,11 +7,15 @@
 #include "Scene.h"
 #include "Sphere.h"
 #include "Camera.h"
+#include "Light.h"
 
 #define SCREENWIDTH 1080
 #define SCREENHEIGHT 1080
 #define MAXFLOAT 4294967296.0f
 #define BACKGROUNDCOLOR {0, 0, 0}
+
+//-------------------------------------------------------------------------------------------------
+
 
 float * VectorDirection(float vector1[3], float vector2[3]) {
     return new float[3] {vector1[0] - vector2[0], vector1[1] - vector2[1], vector1[2] - vector2[2]};
@@ -20,6 +24,39 @@ float * VectorDirection(float vector1[3], float vector2[3]) {
 float VectorDotProduct(float vector1[3], float vector2[3]) {
     return vector1[0] * vector2[0] + vector1[1] * vector2[1] + vector1[2] * vector2[2];
 }
+
+float ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene) {
+    float intensity = 0.0;
+    float lightDirection[3] = { 0, 0, 0 };
+    float normalDotLightDir;
+
+    for (const auto& light : scene.lightsInScene) {
+        if (light.type == light.ambient) {
+            intensity += light.intensity;
+        }
+        else {
+            if (light.type == light.point) {
+                float lightPosition[3];
+                memcpy(lightPosition, light.position, sizeof(lightPosition));
+                memcpy(lightDirection, VectorDirection(lightPosition, pointOfIntersection), sizeof(lightDirection));
+            }
+            else if (light.type == light.directional) {
+                memcpy(lightDirection, light.direction, sizeof(lightDirection));
+            }
+            normalDotLightDir = VectorDotProduct(normal, lightDirection);
+
+            // cos x = Dot (Surface Normal N, Light Direction L) / |N| * |L|
+            // If cosine is negative, then that means light is shining behind the object so we won't count it
+            if (normalDotLightDir > 0) {
+                intensity += light.intensity * normalDotLightDir / (VectorDotProduct(normal, normal) * VectorDotProduct(lightDirection, lightDirection));
+            }
+        }
+
+    }
+    return intensity;
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Determines at what point(s) the ray intersects the sphere
 
@@ -90,6 +127,7 @@ float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, flo
     // If no circle is intersected by a ray, then return the background color
     // Else, return the color of the closest circle to the camera at that point in the viewport
     float closestColor[3] = BACKGROUNDCOLOR;
+    float closestCenter[3] = { 0, 0, 0 };
 
     int i = 0;
     for (const Sphere &sphere : scene.spheresInScene) {
@@ -100,17 +138,49 @@ float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, flo
 
             closestParam = param_t1;
             memcpy (closestColor, sphere.color, sizeof(closestColor));
+            memcpy(closestCenter, sphere.center, sizeof(closestCenter));
         }
         if (param_t2 > min_param && param_t2 < max_param && param_t2 < closestParam) {
 
             closestParam = param_t2;
             memcpy(closestColor, sphere.color, sizeof(closestColor));
+            memcpy(closestCenter, sphere.center, sizeof(closestCenter));
         }
         
     }
     
+    //return closestColor;
+    
+    // TODO: REFACTOR THIS 
+    
+    // Calculate point of intersection of ray with sphere
+    float posX = cameraPos[0] + closestParam * rayDirection[0];
+    float posY = cameraPos[1] + closestParam * rayDirection[1];
+    float posZ = cameraPos[2] + closestParam * rayDirection[2];
+
+    float pointOnSphereToColor[3] = { posX, posY, posZ };
+
+    float normal[3];
+
+    // Calculate surface normal at that intersection point 
+    memcpy(normal, VectorDirection(pointOnSphereToColor, closestCenter), sizeof(normal));
+
+    // Normalize normal vector to unit length of 1
+    float factor = VectorDotProduct(normal, normal);
+    normal[0] /= factor;
+    normal[1] /= factor;
+    normal[2] /= factor;
+
+    float intensity = ComputeLighting(pointOnSphereToColor, normal, scene);
+
+    closestColor[0] *= intensity;
+    closestColor[1] *= intensity;
+    closestColor[2] *= intensity;
+    
     return closestColor;
 }
+
+//-------------------------------------------------------------------------------------------------
 
 void DrawPixel(HDC hdc, int viewportX, int viewportY, float color[3]) {
     int screenX = SCREENWIDTH / 2 + viewportX;

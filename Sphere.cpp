@@ -1,8 +1,8 @@
 #include <windows.h> 
 #include "Sphere.h"
 
-Sphere::Sphere(float col[3], float radius, float cent[3]) {
-    memcpy(color, col, sizeof(color));
+Sphere::Sphere(float color[3], float radius, float center[3]) {
+    memcpy(this->color, color, sizeof(this->color));
     this->radius = radius;
-    memcpy(center, cent, sizeof(center));
+    memcpy(this->center, center, sizeof(this->center));
 }
