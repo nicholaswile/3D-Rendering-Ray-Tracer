@@ -11,11 +11,11 @@ public:
 	lightType type;
 
 protected:
-	Light(lightType) : type(type) {
+	Light(lightType type) : type(type) {
 		intensity = 0.0f;
 		memcpy(position, new float [3] {0, 0, 0}, sizeof(position));
 		memcpy(direction, new float[3] {0, 0, 0}, sizeof(direction));
-		type = ambient;
+		this->type = type;
 	}
 };
 

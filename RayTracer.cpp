@@ -16,7 +16,6 @@
 
 //-------------------------------------------------------------------------------------------------
 
-
 float * VectorDirection(float vector1[3], float vector2[3]) {
     return new float[3] {vector1[0] - vector2[0], vector1[1] - vector2[1], vector1[2] - vector2[2]};
 }
@@ -48,7 +47,7 @@ float ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene
             // cos x = Dot (Surface Normal N, Light Direction L) / |N| * |L|
             // If cosine is negative, then that means light is shining behind the object so we won't count it
             if (normalDotLightDir > 0) {
-                intensity += light.intensity * normalDotLightDir / (VectorDotProduct(normal, normal) * VectorDotProduct(lightDirection, lightDirection));
+                intensity += light.intensity * normalDotLightDir / (sqrt((VectorDotProduct(normal, normal)) * sqrt(VectorDotProduct(lightDirection, lightDirection))));
             }
         }
 
@@ -166,7 +165,7 @@ float * TraceRay(float cameraPos[3], float rayDirection[3], float min_param, flo
     memcpy(normal, VectorDirection(pointOnSphereToColor, closestCenter), sizeof(normal));
 
     // Normalize normal vector to unit length of 1
-    float factor = VectorDotProduct(normal, normal);
+    float factor = sqrt(VectorDotProduct(normal, normal));
     normal[0] /= factor;
     normal[1] /= factor;
     normal[2] /= factor;
