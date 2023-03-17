@@ -1,5 +1,4 @@
 # 3D Renderer - Ray Tracing
-This is a work in progress. Each branch represents a different basic feature of the ray tracer. Currently flat colors are rendered. I plan to add lighting, shadows, and reflections.
 
 ## Lighting (Current)
 Work in progress.
