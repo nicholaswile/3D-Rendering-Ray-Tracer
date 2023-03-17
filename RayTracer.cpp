@@ -27,13 +27,14 @@ float VectorDotProduct(float vector1[3], float vector2[3]) {
 float ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene) {
     float intensity = 0.0;
     float lightDirection[3] = { 0, 0, 0 };
-    float normalDotLightDir;
 
     for (const auto& light : scene.lightsInScene) {
         if (light.type == light.ambient) {
             intensity += light.intensity;
         }
         else {
+            float normalDotLightDir;
+
             if (light.type == light.point) {
                 float lightPosition[3];
                 memcpy(lightPosition, light.position, sizeof(lightPosition));
@@ -47,7 +48,8 @@ float ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene
             // cos x = Dot (Surface Normal N, Light Direction L) / |N| * |L|
             // If cosine is negative, then that means light is shining behind the object so we won't count it
             if (normalDotLightDir > 0) {
-                intensity += light.intensity * normalDotLightDir / (sqrt((VectorDotProduct(normal, normal)) * sqrt(VectorDotProduct(lightDirection, lightDirection))));
+                float normalLenTimesLightDirLen = sqrt(VectorDotProduct(normal, normal)) * sqrt(VectorDotProduct(lightDirection, lightDirection));
+                intensity += light.intensity * normalDotLightDir / normalLenTimesLightDirLen;
             }
         }
 
