@@ -6,8 +6,11 @@ This is a work in progress. Each branch represents a different basic feature of 
 ### Specular 
 Up next after I fix diffuse reflections. 
 
-### Diffuse (needs work)
-Ambient, point, and directional light reflections are implemented. There are some weird deformations with the spheres.
+### Diffuse (done)
+Ambient, point, and directional light reflections are implemented. 
+![image](https://user-images.githubusercontent.com/74445404/226056537-f185cd7e-ca45-4357-944d-6136e2695ab4.png)
+
+There are some weird deformations with the spheres. [Fixed]
 <img width="455" alt="image" src="https://user-images.githubusercontent.com/74445404/225863027-b5810131-a25b-4c0c-a792-f445967d8d31.png">
 
 ### Ambient only 
