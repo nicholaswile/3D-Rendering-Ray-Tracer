@@ -128,11 +128,13 @@ int main()
     float projectionCoord[3]; // the coords of the viewport in the scene
     float color[3] = { 0, 0, 0 };
     
-    for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
-        for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
-            memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
-            memcpy(color, TraceRay(camera.GetPosition(), projectionCoord, 1, MAXFLOAT, scene), sizeof(color));
-            DrawPixel(hdc, x, y, color);
+    while (true) {
+        for (int x = -SCREENWIDTH / 2; x <= SCREENWIDTH / 2; x++) {
+            for (int y = -SCREENHEIGHT / 2; y <= SCREENHEIGHT / 2; y++) {
+                memcpy(projectionCoord, camera.CanvasToViewport(x, y), sizeof(projectionCoord));
+                memcpy(color, TraceRay(camera.GetPosition(), projectionCoord, 1, MAXFLOAT, scene), sizeof(color));
+                DrawPixel(hdc, x, y, color);
+            }
         }
-    }
+   }
 }

@@ -24,7 +24,7 @@
     <ProjectGuid>{5d033067-8077-4a48-815f-4649593b5c13}</ProjectGuid>
     <RootNamespace>RayTracer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>RayTracing_FlatColors</ProjectName>
+    <ProjectName>01_RayTracing_FlatColors</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
