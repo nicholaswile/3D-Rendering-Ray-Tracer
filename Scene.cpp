@@ -11,5 +11,8 @@ void Scene::CreateScene() {
 
     Sphere sphere3 (new float[3] { 0.0f, 0.0f, 255.0f }, 1.0f, new float[3] { -1.5f, -.25f, 4.0f });
     spheresInScene.push_back(sphere3);
+
+    Sphere sphere4(new float[3] {255 / 3, 255 / 3, 255 / 3}, 5000, new float[3] {0, -5001, 0});
+    spheresInScene.push_back(sphere4);
     
 }
