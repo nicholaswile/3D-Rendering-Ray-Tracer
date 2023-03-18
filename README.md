@@ -12,6 +12,8 @@ Specular reflection with glossy material is implemented. If materials are specif
 
 <img width="400" alt="Three spheres with specular lighting." src="https://user-images.githubusercontent.com/74445404/226090908-f7789d0b-b18a-4fd3-ac78-79df5d5ac902.png">
 
+#### Troubleshooting
+
 Problems with specular lighting and glossy materials arise when intensity exceeds 1 from the Compute Light function. When this happens, black pixels are drawn where white highlights are expected to occur. (This has been fixed).
 
 <img width="400" alt="Glossy spheres with black pixels where white highlights are expected." src="https://user-images.githubusercontent.com/74445404/226090800-5c1bb8b3-baf2-4c22-9155-e1fdf3066f05.png">
@@ -23,7 +25,9 @@ Ambient, point, and directional light reflections are implemented.
 
 <img width="400" alt="Three spheres with diffuse lighting. They look 3D now." src="https://user-images.githubusercontent.com/74445404/226056722-219a84e7-3642-4a58-9305-8df862eaae81.png">
 
-There are some weird deformations with the spheres. (This has been fixed). 
+#### Troubleshooting
+
+There are some weird deformations with the spheres caused by an error in the diffuse intensity calculation for point and directional lights. (This has been fixed). 
 
 <img width="400" alt="Three spheres with diffuse lighting and irregularities. Certain spots on the spheres are unexpected colors." src="https://user-images.githubusercontent.com/74445404/225863027-b5810131-a25b-4c0c-a792-f445967d8d31.png">
 
