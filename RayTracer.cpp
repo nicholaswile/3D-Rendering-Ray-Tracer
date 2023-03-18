@@ -1,11 +1,5 @@
 #include "RayTracer.h"
 
-#include "Scene.h"
-#include "Sphere.h"
-#include "Camera.h"
-#include "Light.h"
-#include "VecMath.h"
-
 //-------------------------------------------------------------------------------------------------
 
 float RayTracer::ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene, float pointTocam [3], float specularExponent) {
@@ -39,21 +33,36 @@ float RayTracer::ComputeLighting(float pointOfIntersection[3], float normal[3], 
 
         // Specular
             if (specularExponent != -1) {
-                // R = 2 N (L dot N) - L
                 float reflectionVector[3], lightProjectionOntoNormal[3];
+
+                // R = 2 N (L dot N) - L
+                    // L dot N
                 float lightDotnormal = math.aDotb(lightDirection, normal);
-                memcpy(lightProjectionOntoNormal, math.Scale(normal, 2 * lightDotnormal), sizeof(lightProjectionOntoNormal));
-         
+                    // 2 N 
+                float factor = 2 * lightDotnormal;
+                    // 2 N * (L dot N) = N * (2 * (L dot N))
+                memcpy(lightProjectionOntoNormal, math.Scale(normal, factor), sizeof(lightProjectionOntoNormal));
+                    // 2N (L dot N) - L 
                 memcpy(reflectionVector, math.aTob(lightProjectionOntoNormal, lightDirection), sizeof(reflectionVector));
 
+                // R dot V 
                 float reflectionDotpointToCam = math.aDotb(reflectionVector, pointTocam);
 
                 if (reflectionDotpointToCam > 0) {
-                    intensity += light.intensity * pow((reflectionDotpointToCam / (math.Length(reflectionVector) * math.Length(pointTocam))), specularExponent);
+                    float cosine = reflectionDotpointToCam / (math.Length(reflectionVector) * math.Length(pointTocam));
+
+                    intensity += light.intensity * pow(cosine, specularExponent);
+                    
                 }
             }
         }
 
+    }
+    if (intensity > 1) {
+        intensity = 1;
+    }
+    if (intensity < 0) {
+        intensity = 0;
     }
     return intensity;
 }
@@ -133,7 +142,6 @@ float * RayTracer::TraceRay(float cameraPos[3], float rayDirection[3], float min
     }
        
     // Calculate point of intersection of ray with sphere
-
     float posX = cameraPos[0] + closestParam * rayDirection[0];
     float posY = cameraPos[1] + closestParam * rayDirection[1];
     float posZ = cameraPos[2] + closestParam * rayDirection[2];
@@ -155,4 +163,3 @@ float * RayTracer::TraceRay(float cameraPos[3], float rayDirection[3], float min
     
     return closestColor;
 }
-
