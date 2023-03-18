@@ -4,5 +4,9 @@ public:
     float color[3];
     float radius;
     float center[3];
-    Sphere(float col[3], float radius, float cent[3]);
+    float specularExponent;
+    // Matte
+    Sphere(float color[3], float radius, float center[3]);
+    // Specular
+    Sphere(float color[3], float radius, float center[3], float specularExponent);
 };
