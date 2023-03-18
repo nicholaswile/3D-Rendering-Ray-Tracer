@@ -61,9 +61,6 @@ float RayTracer::ComputeLighting(float pointOfIntersection[3], float normal[3], 
     if (intensity > 1) {
         intensity = 1;
     }
-    if (intensity < 0) {
-        intensity = 0;
-    }
     return intensity;
 }
 
