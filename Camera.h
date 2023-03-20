@@ -1,6 +1,4 @@
 #pragma once
-#define SCREENWIDTH 1080
-#define SCREENHEIGHT 1080
 
 class Camera {
 public:
@@ -19,6 +17,12 @@ public:
     }
     float GetViewportDistance() {
         return m_viewportDistance;
+    }
+    int GetScreenWidth() {
+        return m_screenWidth;
+    }
+    int GetScreenHeight() {
+        return m_screenHeight;
     }
     void SetPosition(float x, float y, float z) {
         m_Position[0] = x;
@@ -39,11 +43,17 @@ public:
     void SetViewportDistance(float d) {
         m_viewportDistance = d;
     }
+    void SetScreenWidth(float width) {
+        m_screenWidth = width;
+    }
+    void SetScreenHeight(float height) {
+        m_screenHeight = height;
+    }
     // Given canvas coordinates of the current pixel, determine corresponding position in viewport (space)
     float* CanvasToViewport(int canvasX, int canvasY) {
         return new float[3] {
-            canvasX* m_viewportWidth / SCREENWIDTH,
-            canvasY* m_viewportHeight / SCREENHEIGHT,
+            canvasX* m_viewportWidth / m_screenWidth,
+            canvasY* m_viewportHeight / m_screenHeight,
             m_viewportDistance
         };
     }
@@ -53,5 +63,7 @@ private:
     float m_viewportWidth;
     float m_viewportHeight;
     float m_viewportDistance; // the distance between the camera and viewport/projection plane
+    int m_screenWidth;
+    int m_screenHeight;
 };
 
