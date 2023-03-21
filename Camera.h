@@ -43,10 +43,10 @@ public:
     void SetViewportDistance(float d) {
         m_viewportDistance = d;
     }
-    void SetScreenWidth(float width) {
+    void SetScreenWidth(int width) {
         m_screenWidth = width;
     }
-    void SetScreenHeight(float height) {
+    void SetScreenHeight(int height) {
         m_screenHeight = height;
     }
     // Given canvas coordinates of the current pixel, determine corresponding position in viewport (space)

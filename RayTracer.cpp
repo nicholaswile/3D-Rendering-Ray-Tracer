@@ -1,58 +1,84 @@
 #include "RayTracer.h"
 
 //-------------------------------------------------------------------------------------------------
+// P is the point of intersection
+// N is the normal on the surface at the point of intersection
+// V is the direction from the point P to the camera 
+float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3], float spec) {
+    
+    float intensity = 0.0f;
+    float L[3];
+    float t_max = 1;
 
-float RayTracer::ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene, float pointTocam [3], float specularExponent) {
-    float intensity = 0.0;
-    float lightDirection[3] = { 0, 0, 0 };
-
-    for (const auto& light : scene.lightsInScene) {
+    for (const Light &light : scene.lightsInScene) {
+        
+        // Ambient light
         if (light.type == light.ambient) {
             intensity += light.intensity;
         }
+
         else {
-            float normalDotLightDir;
 
             if (light.type == light.point) {
-                float lightPosition[3];
-                memcpy(lightPosition, light.position, sizeof(lightPosition));
-                memcpy(lightDirection, math.aTob(lightPosition, pointOfIntersection), sizeof(lightDirection));
-            }
-            else if (light.type == light.directional) {
-                memcpy(lightDirection, light.direction, sizeof(lightDirection));
-            }
-            normalDotLightDir = math.aDotb(normal, lightDirection);
+                // L = light.position - P
+                float lightPos[3] = { light.position[0], light.position[1], light.position[2] };
 
-        // Diffuse
+                memcpy(L, math.aTob(lightPos, P), sizeof(L));
+
+                t_max = 1;
+            }
+
+            else if (light.type == light.directional) {
+                // L = light.direction
+                memcpy(L, light.direction, sizeof(L));
+
+                t_max = MAXFLOAT;
+            }
+
+            float n_dot_l = math.aDotb(N, L);
+
+            // Shadow check
+            bool shadowcheck = false;
+            float params[2], param1, param2, closestParam = MAXFLOAT;
+            Sphere shadowSphere;
+
+            for (const Sphere& sphere : scene.spheresInScene) {
+                
+                memcpy(params, IntersectRaySphere(P, L, sphere), sizeof(params));
+                param1 = params[0];
+                param2 = params[1];
+                if ((param1 > 0.001f && param1 < t_max && param1 < closestParam)) {
+                    shadowcheck = true;
+                    closestParam = param1;
+                    shadowSphere = sphere;
+                }
+                    
+                if (param2 > 0.001f && param2 < t_max && param2 < closestParam) {
+                    shadowcheck = true;
+                    closestParam = param2;
+                    shadowSphere = sphere;
+                }
+            }
+            if (shadowcheck) {
+               continue;
+               
+            }
+
+            // Diffuse
             // cos x = Dot (Surface Normal N, Light Direction L) / |N| * |L|
             // If cosine is negative, then that means light is shining behind the object so we won't count it
-            if (normalDotLightDir > 0 ) {
-                float normalLenTimesLightDirLen = math.Length(normal) * math.Length(lightDirection);
-                intensity += light.intensity * normalDotLightDir / normalLenTimesLightDirLen;
+            if (n_dot_l > 0 ) {
+                intensity += light.intensity * n_dot_l / (math.Length(N) * math.Length(L));
             }
 
-        // Specular
-            if (specularExponent != -1) {
-                float reflectionVector[3], lightProjectionOntoNormal[3];
+            // Specular
+            if (spec != -1) {
+                float R[3];
+                memcpy(R, math.aTob(math.Scale(N, 2 * n_dot_l), L), sizeof(R));
 
-                // R = 2 N (L dot N) - L
-                    // L dot N
-                float lightDotnormal = math.aDotb(lightDirection, normal);
-                    // 2 N 
-                float factor = 2 * lightDotnormal;
-                    // 2 N * (L dot N) = N * (2 * (L dot N))
-                memcpy(lightProjectionOntoNormal, math.Scale(normal, factor), sizeof(lightProjectionOntoNormal));
-                    // 2N (L dot N) - L 
-                memcpy(reflectionVector, math.aTob(lightProjectionOntoNormal, lightDirection), sizeof(reflectionVector));
-
-                // R dot V 
-                float reflectionDotpointToCam = math.aDotb(reflectionVector, pointTocam);
-
-                if (reflectionDotpointToCam > 0) {
-                    float cosine = reflectionDotpointToCam / (math.Length(reflectionVector) * math.Length(pointTocam));
-
-                    intensity += light.intensity * pow(cosine, specularExponent);
-                    
+                float r_dot_v = math.aDotb(R, V);
+                if (r_dot_v > 0) {
+                    intensity += light.intensity * (float)pow(r_dot_v / (math.Length(R) * math.Length(V)), spec);
                 }
             }
         }
@@ -65,98 +91,88 @@ float RayTracer::ComputeLighting(float pointOfIntersection[3], float normal[3], 
 }
 
 //-------------------------------------------------------------------------------------------------
+// O is the position of the camera
+// D is the direction of the ray from the camera to a point in the viewport
+float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
+    float r = sphere.radius;
 
-float* RayTracer::IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphere) {
-    float radius;
-    float camToSphere[3];
-    float coeff_a, coeff_b, coeff_c, discriminant;
-    float param_t1, param_t2;
-
-    radius = sphere.radius;
+    // CO = O - sphere.center 
+    float CO[3];
+    memcpy(CO, math.aTob(O, sphere.center), sizeof(CO));
     
-    memcpy(camToSphere, math.aTob(cameraPos, sphere.center), sizeof(camToSphere));
-    
-    coeff_a = math.aDotb(rayDirection, rayDirection);
-    coeff_b = 2 * math.aDotb(camToSphere, rayDirection);
-    coeff_c = math.aDotb(camToSphere, camToSphere) - radius * radius;
+    // a^2x + bx + c
+    float a = math.aDotb(D, D);
+    float b = 2 * math.aDotb(CO, D);
+    float c = math.aDotb(CO, CO) - r * r;
 
     // No real solution, therefore the ray does not intersect the sphere
-    discriminant = coeff_b * coeff_b - 4 * coeff_a * coeff_c;
+    float discriminant = b * b - 4 * a * c;
     if (discriminant < 0) {
         return new float[2] {MAXFLOAT, MAXFLOAT};
     }
+
     // Quadratic formula to find two positions where the ray intersects the sphere
-    param_t1 = (-coeff_b + (float)sqrt(discriminant)) / 2.0f * coeff_a;
-    param_t2 = (-coeff_b - (float)sqrt(discriminant)) / 2.0f * coeff_a;
+    float param_t1 = (-b + (float)sqrt(discriminant)) / 2 * a;
+    float param_t2 = (-b - (float)sqrt(discriminant)) / 2 * a;
 
     return new float[2] {param_t1, param_t2};
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Determine color of ray passing through the viewport position seen from the camera position
-float * RayTracer::TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene) {
-    float closestParam = MAXFLOAT;
-    float param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
-    float parameters[2] = { param_t1, param_t2 };
 
-    Sphere* closestSphere = NULL;
+// Determine color of ray passing through the viewport position seen from the camera position
+float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_param, Scene scene) {
+    float closestParam = MAXFLOAT, param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
+    float parameters[2] = { param_t1, param_t2 };
+    
+    Sphere closestSphere;
+    bool closestSphereNull = true;
 
     // If no circle is intersected by a ray, then return the background color
     // Else, return the color of the closest circle to the camera at that point in the viewport
-    float closestColor[3] = BACKGROUNDCOLOR;
-    bool closestSphereNull = true;
-    float closestCenter[3] = { 0, 0, 0 };
-    float closestSphereSpecular = -1;
 
-    int i = 0;
     for (const Sphere &sphere : scene.spheresInScene) {
-        memcpy(parameters, IntersectRaySphere(cameraPos, rayDirection, sphere), sizeof(parameters));
+        memcpy(parameters, IntersectRaySphere(O, D, sphere), sizeof(parameters));
         param_t1 = parameters[0], param_t2 = parameters[1];
-        i++;
+
         if (param_t1 > min_param && param_t1 < max_param && param_t1 < closestParam) {
-
             closestParam = param_t1;
-            memcpy (closestColor, sphere.color, sizeof(closestColor));
-            memcpy(closestCenter, sphere.center, sizeof(closestCenter));
+            (closestSphere).Copy(sphere);
             closestSphereNull = false;
-            closestSphereSpecular = sphere.specularExponent;
         }
+
         if (param_t2 > min_param && param_t2 < max_param && param_t2 < closestParam) {
-
             closestParam = param_t2;
-            memcpy(closestColor, sphere.color, sizeof(closestColor));
-            memcpy(closestCenter, sphere.center, sizeof(closestCenter));
+            (closestSphere).Copy(sphere);
             closestSphereNull = false;
-            closestSphereSpecular = sphere.specularExponent;
         }
-        
     }
-   
-    // Background Color
+
     if (closestSphereNull) {
-        return closestColor;
+        return new float[3] BACKGROUNDCOLOR;
     }
-       
+    
     // Calculate point of intersection of ray with sphere
-    float posX = cameraPos[0] + closestParam * rayDirection[0];
-    float posY = cameraPos[1] + closestParam * rayDirection[1];
-    float posZ = cameraPos[2] + closestParam * rayDirection[2];
+    // P = O + t * D
+    float posX = O[0] + closestParam * D[0];
+    float posY = O[1] + closestParam * D[1];
+    float posZ = O[2] + closestParam * D[2];
 
-    float pointOnSphereToColor[3] = { posX, posY, posZ };
-
-    float normal[3];
+    // Point of intersection P
+    float P[3] = { posX, posY, posZ };
 
     // Calculate surface normal at that intersection point 
-    memcpy(normal, math.aTob(pointOnSphereToColor, closestCenter), sizeof(normal));
+    // N = P - closestSphere.center
+    float N[3];
+    memcpy(N, math.aTob(P, closestSphere.center), sizeof(N));
 
     // Normalize normal vector to unit length of 1
-    float factor = 1/math.Length(normal);
-    memcpy(normal, math.Scale(normal, factor), sizeof(normal));
+    memcpy(N, math.Scale(N, 1.0f/math.Length(N)), sizeof(N));
 
-    float intensity = ComputeLighting(pointOnSphereToColor, normal, scene, math.Scale(rayDirection, -1), closestSphereSpecular);
+    // Color * Intensity from ComputeLighting()
+    float returnColor[3];
+    memcpy(returnColor, math.Scale(closestSphere.color, ComputeLighting(P, N, scene, math.Scale(D, -1), closestSphere.specularExponent)), sizeof(returnColor));
 
-    memcpy(closestColor, math.Scale(closestColor, intensity), sizeof(closestColor));
-    
-    return closestColor;
+    return returnColor;
 }

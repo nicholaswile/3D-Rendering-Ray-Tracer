@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#define SCREENWIDTH 1080
+#define SCREENWIDTH 1920
 #define SCREENHEIGHT 1080
 
 Camera::Camera() {
