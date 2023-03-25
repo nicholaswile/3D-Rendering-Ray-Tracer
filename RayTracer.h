@@ -67,8 +67,10 @@ public:
     // Ray direction is the direction of light determined by Point on Viewport - Camera Position 
     // min and max parameters determine which segments of the light ray we want to look at
     // Scene includes the lights and objects in the scene
-    float* TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene);
+    float* TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene, float recursionDepth);
 
     bool CheckIntersection(float[3], float[3], float, float, Scene);
+
+    float* ReflectRay(float R[3], float N[3]);
 
 };

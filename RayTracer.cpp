@@ -74,7 +74,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
             // Specular
             if (spec != -1) {
                 float R[3];
-                memcpy(R, math.aTob(math.Scale(N, 2 * n_dot_l), L), sizeof(R));
+                memcpy(R, ReflectRay(L,N), sizeof(R));
 
                 float r_dot_v = math.aDotb(R, V);
                 if (r_dot_v > 0) {
@@ -88,6 +88,10 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
         intensity = 1;
     }
     return intensity;
+}
+
+float* RayTracer::ReflectRay(float R[3], float N[3]) {
+    return math.aTob(math.Scale(N,2*math.aDotb(R, N)), R);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -122,7 +126,7 @@ float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
 
 
 // Determine color of ray passing through the viewport position seen from the camera position
-float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_param, Scene scene) {
+float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_param, Scene scene, float recursionDepth) {
     float closestParam = MAXFLOAT, param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
     float parameters[2] = { param_t1, param_t2 };
     
@@ -171,8 +175,20 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
     memcpy(N, math.Scale(N, 1.0f/math.Length(N)), sizeof(N));
 
     // Color * Intensity from ComputeLighting()
-    float returnColor[3];
-    memcpy(returnColor, math.Scale(closestSphere.color, ComputeLighting(P, N, scene, math.Scale(D, -1), closestSphere.specularExponent)), sizeof(returnColor));
+    float localColor[3];
+    memcpy(localColor, math.Scale(closestSphere.color, ComputeLighting(P, N, scene, math.Scale(D, -1), closestSphere.specularExponent)), sizeof(localColor));
 
-    return returnColor;
+    // if recursion limit is reached or object is not reflective, base case
+    float r = closestSphere.reflective;
+    if (r <= 0 || recursionDepth <= 0) {
+        return localColor;
+    }
+   return localColor;
+
+    // Reflections: doesn't work
+    float minusD[3],  R[3],  reflectedColor[3];
+    memcpy(minusD, math.Scale(D, -1), sizeof(minusD));
+    memcpy(R,ReflectRay(minusD, N), sizeof(R));
+    memcpy(reflectedColor, TraceRay(P, R, 0.001f, MAXFLOAT, scene, recursionDepth - 1), sizeof(reflectedColor));
+    return math.Add(math.Scale(localColor, float(1.0f-r)), math.Scale(reflectedColor, r));
 }

@@ -17,16 +17,16 @@ void Scene::CreateScene() {
     Sphere sphere5(color.white, .5, new float[3] { 0, -.5, 2.5}, 250);
     spheresInScene.push_back(sphere5);*/
 
-    Sphere sphere1(color.red, 1, new float[3] { 0, -1, 3}, 500);
+    Sphere sphere1(color.red, 1, new float[3] { 0, -1, 3}, 500, .2f);
     spheresInScene.push_back(sphere1);
 
-    Sphere sphere2(color.blue, 1, new float[3] { 2, 0, 4 }, 500);
+    Sphere sphere2(color.blue, 1, new float[3] { 2, 0, 4 }, 500, .3f);
     spheresInScene.push_back(sphere2);
 
-    Sphere sphere3(color.green, 1, new float[3] { -2, 0, 4 }, 10);
+    Sphere sphere3(color.green, 1, new float[3] { -2, 0, 4 }, 10, .4f);
     spheresInScene.push_back(sphere3);
 
-    Sphere sphere4(color.yellow, 5000, new float[3] {0, -5001, 0}, 1000);
+    Sphere sphere4(color.yellow, 5000, new float[3] {0, -5001, 0}, 1000, .5f);
     spheresInScene.push_back(sphere4);
 
     //-------------------------------------------------------------------------------------------------

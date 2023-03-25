@@ -14,11 +14,10 @@ float* VecMath::Scale(float a[3], float scalar) {
 }
 
 float* VecMath::Add(float a[3], float b[3]) {
-    // a + b is the same as a - (-b)
-    float bReverse[3];
     float sum[3];
-    memcpy(bReverse, Scale(b, -1), sizeof(bReverse));
-    memcpy(sum, aTob(a, bReverse), sizeof(sum));
+    for (int i = 0; i < 3; i++) {
+        sum[i] = a[i] + b[i];
+    }
     return sum;
 }
 

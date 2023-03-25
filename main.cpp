@@ -34,6 +34,8 @@ int main()
 
     HDC hdc = GetDC(GetConsoleWindow());
 
+    float recursionDepth = 3;
+
     // 3D viewport coordinates
     float D[3]; 
 
@@ -46,7 +48,7 @@ int main()
         for (int x = - screenWidth / 2; x <= screenWidth / 2; x++) {
             for (int y = -screenHeight / 2; y <= screenHeight / 2; y++) {
                 memcpy(D, renderer.camera.CanvasToViewport(x, y), sizeof(D));
-                memcpy(color, renderer.TraceRay(renderer.camera.GetPosition(), D, 1, MAXFLOAT, renderer.scene), sizeof(color));
+                memcpy(color, renderer.TraceRay(renderer.camera.GetPosition(), D, 1, MAXFLOAT, renderer.scene, recursionDepth), sizeof(color));
                 DrawPixel(hdc, x, y, screenWidth, screenHeight, color);
             }
         }
