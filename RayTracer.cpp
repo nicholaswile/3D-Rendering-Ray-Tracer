@@ -191,7 +191,8 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
     if (r <= 0 || recursionDepth <= 0) {
         return localColor;
     }
-   return localColor;
+    
+    return localColor;
 
     // Reflections: doesn't work
     float minusD[3],  R[3],  reflectedColor[3];

@@ -39,11 +39,11 @@
 #include "Camera.h"
 #include "Light.h"
 #include "VecMath.h"
-
+#include <iostream>
 #include <array> // gives std::array used in RayTracer.cpp to compare sphere color to background
 
 #define MAXFLOAT 4294967296.0f
-#define BACKGROUNDCOLOR {255, 255, 255}
+#define BACKGROUNDCOLOR {0, 0, 0}
 
 
 class RayTracer {
@@ -69,8 +69,8 @@ public:
     // Scene includes the lights and objects in the scene
     float* TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene, float recursionDepth);
 
-    bool CheckIntersection(float[3], float[3], float, float, Scene);
-
     float* ReflectRay(float R[3], float N[3]);
+
+    
 
 };
