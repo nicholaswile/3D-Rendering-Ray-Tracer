@@ -17,17 +17,19 @@ void Scene::CreateScene() {
     Sphere sphere5(color.white, .5, new float[3] { 0, -.5, 2.5}, 250);
     spheresInScene.push_back(sphere5);*/
 
-    Sphere sphere1(color.red, 1, new float[3] { 0, -1, 3}, 500, .2f);
+    Sphere sphere1(color.red, 1, new float[3] { 0, 0, 3}, 500, .2f);
     spheresInScene.push_back(sphere1);
+    Sphere sphere5(color.white, 5000, new float[3] { -1, -5001, 4}, 500, .2f);
+    spheresInScene.push_back(sphere5);
 
     Sphere sphere2(color.blue, 1, new float[3] { 2, 0, 4 }, 500, .3f);
-    spheresInScene.push_back(sphere2);
+    //spheresInScene.push_back(sphere2);
 
     Sphere sphere3(color.green, 1, new float[3] { -2, 0, 4 }, 10, .4f);
-    spheresInScene.push_back(sphere3);
+    //spheresInScene.push_back(sphere3);
 
     Sphere sphere4(color.yellow, 5000, new float[3] {0, -5001, 0}, 1000, .5f);
-    spheresInScene.push_back(sphere4);
+    //spheresInScene.push_back(sphere4);
 
     //-------------------------------------------------------------------------------------------------
     
@@ -42,12 +44,13 @@ void Scene::CreateScene() {
 
     // . . .
     AmbientLight light1(.2f);
-    lightsInScene.push_back(light1);
+   // lightsInScene.push_back(light1);
     // . . .
-    PointLight light2(0.6f, new float[3] {2, 1, 0});
-    lightsInScene.push_back(light2);
+    PointLight light2(0.6f, new float[3] {2, 0, 0});
+    //lightsInScene.push_back(light2);
+
     // . . .
-    DirectionalLight light3(.2f, new float[3] {1, 4, 4});
+    DirectionalLight light3(.9f, new float[3] {10, 10, -10});
     lightsInScene.push_back(light3);
     // . . .
 
