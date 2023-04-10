@@ -1,9 +1,9 @@
 #pragma once
-
+#include"VecMath.h"
 class Camera {
 public:
     Camera();
-    float* GetPosition() {
+    VecMath::vec3 GetPosition() {
         return m_Position;
     }
     float* GetOrientation() {
@@ -25,9 +25,7 @@ public:
         return m_screenHeight;
     }
     void SetPosition(float x, float y, float z) {
-        m_Position[0] = x;
-        m_Position[1] = y;
-        m_Position[2] = z;
+        m_Position = { x, y, z };
     }
     void SetOrientation(float x, float y, float z) {
         m_Orientation[0] = x;
@@ -50,15 +48,15 @@ public:
         m_screenHeight = height;
     }
     // Given canvas coordinates of the current pixel, determine corresponding position in viewport (space)
-    float* CanvasToViewport(int canvasX, int canvasY) {
-        return new float[3] {
+    VecMath::vec3 CanvasToViewport(int canvasX, int canvasY) {
+        return VecMath::vec3{
             canvasX* m_viewportWidth / m_screenWidth,
             canvasY* m_viewportHeight / m_screenHeight,
             m_viewportDistance
         };
     }
 private:
-    float m_Position[3];
+    VecMath::vec3 m_Position;
     float m_Orientation[3];
     float m_viewportWidth;
     float m_viewportHeight;

@@ -106,7 +106,8 @@ float RayTracer::ComputeLighting(VecMath::vec3 P, VecMath::vec3 N, Scene scene, 
 
 VecMath::vec3 RayTracer::ReflectRay(VecMath::vec3 R, VecMath::vec3 N) {
     // 2 * N * Dot(N, R) - R
-    return math.Subtract(math.Scale(N, 2 * math.Dot(R, N)), R);
+    VecMath::vec3 reflectedRay = math.Subtract(math.Scale(N, 2 * math.Dot(R, N)), R);
+    return reflectedRay;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -189,7 +190,6 @@ VecMath::vec3 RayTracer::TraceRay(VecMath::vec3 O, VecMath::vec3 D, float min_pa
     // Calculate point of intersection of ray with sphere
    
     // P = O + t * D
-
     VecMath::vec3 P = math.Add(O, math.Scale(D, closestParam));
     
     // Point of intersection P
@@ -198,16 +198,18 @@ VecMath::vec3 RayTracer::TraceRay(VecMath::vec3 O, VecMath::vec3 D, float min_pa
     // N = P - closestSphere.center
     
     VecMath::vec3 VectorC = math.Vector3(closestSphere.center[0], closestSphere.center[1], closestSphere.center[2]);
-    VecMath::vec3 VectorN = math.Subtract(P, VectorC);
+    VecMath::vec3 N = math.Subtract(P, VectorC);
 
     // Normalize normal vector to unit length of 1
     
-    VectorN = math.Scale(VectorN, 1.0f / math.Length(VectorN));
+    N = math.Scale(N, 1.0f / math.Length(N));
 
     // Color * Intensity from ComputeLighting()
 
-    float scalar = ComputeLighting(P, VectorN, scene, math.Scale(D, -1), closestSphere.specularExponent);
-    VecMath::vec3 localColor = math.Scale(VectorC, scalar);
+    float scalar = ComputeLighting(P, N, scene, math.Scale(D, -1), closestSphere.specularExponent);
+
+    VecMath::vec3 sphereColor = math.Vector3(closestSphere.color[0], closestSphere.color[1], closestSphere.color[2]);
+    VecMath::vec3 localColor = math.Scale(sphereColor, scalar);
 
     // if recursion limit is reached or object is not reflective, base case
     float r = closestSphere.reflective;
@@ -217,11 +219,11 @@ VecMath::vec3 RayTracer::TraceRay(VecMath::vec3 O, VecMath::vec3 D, float min_pa
     }
     
     // Reflections
-    VecMath::vec3 VectorR, reflectedColor;
+    VecMath::vec3 R, reflectedColor;
     
-    VectorR = ReflectRay(math.Scale(D, -1), VectorN);
+    R = ReflectRay(math.Scale(D, -1), N);
 
-    reflectedColor = TraceRay(P, VectorR, .001f, MAXFLOAT, scene, recursionDepth - 1);
+    reflectedColor = TraceRay(P, R, .001f, MAXFLOAT, scene, recursionDepth - 1);
 
     float term = (1.0f - r);
 

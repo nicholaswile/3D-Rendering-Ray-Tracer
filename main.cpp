@@ -3,28 +3,28 @@
 
 #define MAXFLOAT 4294967296.0f
 
-void DrawPixel(HDC hdc, int viewportX, int viewportY, int screenWidth, int screenHeight, float color[3]) {
+void DrawPixel(HDC hdc, int viewportX, int viewportY, int screenWidth, int screenHeight, VecMath::vec3 color) {
     int screenX = screenWidth / 2 + viewportX;
     int screenY = screenHeight / 2 - viewportY;
-    if (color[0] < 0) {
-        color[0] = 0;
+    if (color.x < 0) {
+        color.x = 0;
     }
-    else if (color[0] > 255) {
-        color[0] = 255;
+    else if (color.x > 255) {
+        color.x = 255;
     }
-    if (color[1] < 0) {
-        color[1] = 0;
+    if (color.y < 0) {
+        color.y = 0;
     }
-    else if (color[1] > 255) {
-        color[1] = 255;
+    else if (color.y > 255) {
+        color.y = 255;
     }
-    if (color[2] < 0) {
-        color[2] = 0;
+    if (color.z < 0) {
+        color.z = 0;
     }
-    else if (color[2] > 255) {
-        color[2] = 255;
+    else if (color.z > 255) {
+        color.z = 255;
     }
-    SetPixel(hdc, screenX, screenY, RGB(color[0], color[1], color[2]));
+    SetPixel(hdc, screenX, screenY, RGB(color.x, color.y, color.z));
 }
 
 int main()
@@ -37,9 +37,10 @@ int main()
     float recursionDepth = 3;
 
     // 3D viewport coordinates
-    float D[3]; 
+    VecMath::vec3 D;
 
-    float color[3] = { 0, 0, 0 };
+    VecMath::vec3 color;
+
 
     int screenWidth = (int) renderer.camera.GetScreenWidth();
     int screenHeight = (int) renderer.camera.GetScreenHeight();
@@ -47,8 +48,11 @@ int main()
     while (true) {
         for (int x = - screenWidth / 2; x <= screenWidth / 2; x++) {
             for (int y = -screenHeight / 2; y <= screenHeight / 2; y++) {
-                memcpy(D, renderer.camera.CanvasToViewport(x, y), sizeof(D));
-                memcpy(color, renderer.TraceRay(renderer.camera.GetPosition(), D, 1, MAXFLOAT, renderer.scene, recursionDepth), sizeof(color));
+
+                D = renderer.camera.CanvasToViewport(x, y);
+
+                color = renderer.TraceRay(renderer.camera.GetPosition(), D, 1, MAXFLOAT, renderer.scene, recursionDepth);
+
                 DrawPixel(hdc, x, y, screenWidth, screenHeight, color);
             }
         }

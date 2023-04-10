@@ -9,7 +9,7 @@ VecMath::vec2 VecMath::Vector2(float x, float y) {
 }
 
 VecMath::vec3 VecMath::Add(vec3 a, vec3 b) {
-    return vec3{ a.x + b.x, a.y + b.y, a.z + b.z };
+    return { a.x + b.x, a.y + b.y, a.z + b.z };
 }
 
 VecMath::vec3 VecMath::Subtract(vec3 a, vec3 b) {

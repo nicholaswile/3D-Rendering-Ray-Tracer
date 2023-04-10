@@ -43,7 +43,7 @@
 #include <array> // gives std::array used in RayTracer.cpp to compare sphere color to background
 
 #define MAXFLOAT 4294967296.0f
-#define BACKGROUNDCOLOR 0, 0, 0
+#define BACKGROUNDCOLOR 255, 255, 255
 
 
 class RayTracer {
