@@ -6,10 +6,24 @@
 
 class VecMath {
 public: 
-    float* aTob(float a[3], float b[3]);
-    float aDotb(float a[3], float b[3]);
-    float* Scale(float a[3], float scalar);
-    float* Add(float a[3], float b[3]);
-    float Length(float a[3]);
+    struct vec3 {
+        float x;
+        float y;
+        float z;
+    };
+
+    vec3 Vector3(float x, float y, float z);
+
+    //float* Subtract(float a[3], float b[3]);
+    //float Dot(float a[3], float b[3]);
+    //float* Scale(float a[3], float scalar);
+    //float* Add(float a[3], float b[3]);
+    //float Length(float a[3]);
+
+    vec3 Add(vec3 a, vec3 b);
+    vec3 Subtract(vec3 a, vec3 b);
+    float Dot(vec3 a, vec3 b);
+    vec3 Scale(vec3 a, float scalar);
+    float Length(vec3 a);
 };
 

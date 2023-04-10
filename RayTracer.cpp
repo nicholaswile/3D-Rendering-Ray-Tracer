@@ -23,7 +23,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
                 // L = light.position - P
                 float lightPos[3] = { light.position[0], light.position[1], light.position[2] };
 
-                memcpy(L, math.aTob(lightPos, P), sizeof(L));
+                memcpy(L, math.Subtract(lightPos, P), sizeof(L));
 
                 t_max = 1.0f;
             }
@@ -36,7 +36,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
             }
              
 
-            float n_dot_l = math.aDotb(N, L);
+            float n_dot_l = math.Dot(N, L);
             
 
             // Shadow check
@@ -80,7 +80,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
                 float R[3];
                 memcpy(R, ReflectRay(L,N), sizeof(R));
 
-                float r_dot_v = math.aDotb(R, V);
+                float r_dot_v = math.Dot(R, V);
                 if (r_dot_v > 0) {
                     intensity += light.intensity * (float)pow(r_dot_v / (math.Length(R) * math.Length(V)), spec);
                 }
@@ -101,7 +101,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
 float* RayTracer::ReflectRay(float R[3], float N[3]) {
     // 2 * N * Dot(N, R) - R
     float reflectedRay[3];
-    memcpy(reflectedRay, math.aTob(math.Scale(N, 2 * math.aDotb(R, N)), R), sizeof(reflectedRay));
+    memcpy(reflectedRay, math.Subtract(math.Scale(N, 2 * math.Dot(R, N)), R), sizeof(reflectedRay));
     return reflectedRay;
 }
 
@@ -113,12 +113,12 @@ float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
 
     // CO = O - sphere.center 
     float CO[3];
-    memcpy(CO, math.aTob(O, sphere.center), sizeof(CO));
+    memcpy(CO, math.Subtract(O, sphere.center), sizeof(CO));
     
     // a^2x + bx + c
-    float a = math.aDotb(D, D);
-    float b = 2 * math.aDotb(CO, D);
-    float c = math.aDotb(CO, CO) - r * r;
+    float a = math.Dot(D, D);
+    float b = 2 * math.Dot(CO, D);
+    float c = math.Dot(CO, CO) - r * r;
 
     // No real solution, therefore the ray does not intersect the sphere
     float discriminant = b * b - 4 * a * c;
@@ -140,6 +140,9 @@ float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
 float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_param, Scene scene, float recursionDepth) {
     float closestParam = MAXFLOAT, param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
     float parameters[2] = { param_t1, param_t2 };
+
+    VecMath::vec3 VectorO = math.Vector3(O[0], O[1], O[2]);
+    VecMath::vec3 VectorD = math.Vector3(D[0], D[1], D[2]);
     
     Sphere closestSphere;
     bool closestSphereNull = true;
@@ -148,24 +151,32 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
     // Else, return the color of the closest circle to the camera at that point in the viewport
 
     for (const Sphere &sphere : scene.spheresInScene) {
+
         memcpy(parameters, IntersectRaySphere(O, D, sphere), sizeof(parameters));
+
         param_t1 = parameters[0], param_t2 = parameters[1];
 
         if (param_t1 > min_param && param_t1 < max_param && param_t1 < closestParam) {
+
             closestParam = param_t1;
             (closestSphere).Copy(sphere);
             closestSphereNull = false;
+
         }
 
         if (param_t2 > min_param && param_t2 < max_param && param_t2 < closestParam) {
+
             closestParam = param_t2;
             (closestSphere).Copy(sphere);
             closestSphereNull = false;
+
         }
     }
 
     if (closestSphereNull) {
+
         return new float[3] BACKGROUNDCOLOR;
+
     }
     
     // Calculate point of intersection of ray with sphere
@@ -175,19 +186,24 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
     float posZ = O[2] + closestParam * D[2];
 
     // Point of intersection P
-    float P[3] = { posX, posY, posZ };
+    
+    VecMath::vec3 VectorP = math.Vector3(posX, posY, posZ);
 
     // Calculate surface normal at that intersection point 
     // N = P - closestSphere.center
-    float N[3];
-    memcpy(N, math.aTob(P, closestSphere.center), sizeof(N));
+    
+    VecMath::vec3 VectorC = math.Vector3(closestSphere.center[0], closestSphere.center[1], closestSphere.center[2]);
+    VecMath::vec3 VectorN = math.Subtract(VectorP, VectorC);
 
     // Normalize normal vector to unit length of 1
-    memcpy(N, math.Scale(N, 1.0f/math.Length(N)), sizeof(N));
+    
+    VectorN = math.Scale(VectorN, 1.0f / math.Length(VectorN));
 
     // Color * Intensity from ComputeLighting()
+
     float localColor[3];
-    memcpy(localColor, math.Scale(closestSphere.color, ComputeLighting(P, N, scene, math.Scale(D, -1), closestSphere.specularExponent)), sizeof(localColor));
+    float scalar = ComputeLighting(VectorP, VectorN, scene, math.Scale(VectorD, -1), closestSphere.specularExponent);
+    VecMath::vec3 localColor = math.Scale(VectorC, scalar);
 
     // if recursion limit is reached or object is not reflective, base case
     float r = closestSphere.reflective;

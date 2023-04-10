@@ -1,26 +1,25 @@
 #include "VecMath.h"
 
-float* VecMath::aTob(float a[3], float b[3])
-{
-    return new float[3] {a[0] - b[0], a[1] - b[1], a[2] - b[2]};
+VecMath::vec3 VecMath::Vector3(float x, float y, float z) {
+    return vec3{ x, y, z };
 }
 
-float VecMath::aDotb(float a[3], float b[3]) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+VecMath::vec3 VecMath::Add(vec3 a, vec3 b) {
+    return vec3{ a.x + b.x, a.y + b.y, a.z + b.z };
 }
 
-float* VecMath::Scale(float a[3], float scalar) {
-    return new float[3] {scalar* a[0], scalar* a[1], scalar* a[2]};
+VecMath::vec3 VecMath::Subtract(vec3 a, vec3 b) {
+    return vec3{ a.x - b.x, a.y - b.y, a.z - b.z };
 }
 
-float* VecMath::Add(float a[3], float b[3]) {
-    float sum[3];
-    for (int i = 0; i < 3; i++) {
-        sum[i] = a[i] + b[i];
-    }
-    return sum;
+float VecMath::Dot(vec3 a, vec3 b) {
+    return a.x * b.x + a.y * b.y + a.z + b.z;
 }
 
-float VecMath::Length(float a[3]) {
-    return sqrt(aDotb(a, a));
+VecMath::vec3 VecMath::Scale(vec3 a, float scalar) {
+    return vec3{ a.x * scalar, a.y * scalar, a.z * scalar };
+}
+
+float VecMath::Length(vec3 a) {
+    return sqrt(Dot(a, a));
 }
