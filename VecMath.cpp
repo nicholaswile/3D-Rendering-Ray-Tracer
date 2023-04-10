@@ -4,6 +4,10 @@ VecMath::vec3 VecMath::Vector3(float x, float y, float z) {
     return vec3{ x, y, z };
 }
 
+VecMath::vec2 VecMath::Vector2(float x, float y) {
+    return vec2{ x, y };
+}
+
 VecMath::vec3 VecMath::Add(vec3 a, vec3 b) {
     return vec3{ a.x + b.x, a.y + b.y, a.z + b.z };
 }

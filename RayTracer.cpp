@@ -4,12 +4,13 @@
 // P is the point of intersection
 // N is the normal on the surface at the point of intersection
 // V is the direction from the point P to the camera 
-float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3], float spec) {
+float RayTracer::ComputeLighting(VecMath::vec3 P, VecMath::vec3 N, Scene scene, VecMath::vec3 V, float spec) {
     
     float intensity = 0.0f;
-    float L[3];
     float t_max = 1;
     
+    VecMath::vec3 L;
+
     for (const Light &light : scene.lightsInScene) {
         
         // Ambient light
@@ -21,16 +22,18 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
         else{
             if (light.type == light.point) {
                 // L = light.position - P
-                float lightPos[3] = { light.position[0], light.position[1], light.position[2] };
 
-                memcpy(L, math.Subtract(lightPos, P), sizeof(L));
+                VecMath::vec3 lightPos = { light.position[0], light.position[1], light.position[2] };
+
+                L = math.Subtract(lightPos, P);
 
                 t_max = 1.0f;
             }
             // Directional lights work in isolation, but combined with ambient and point they look a little weird
             else if (light.type == light.directional) {
                 // L = light.direction
-                memcpy(L, light.direction, sizeof(L));
+                
+                L = { light.direction[0], light.direction[1], light.direction[2] };
 
                 t_max = MAXFLOAT;
             }
@@ -41,14 +44,18 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
 
             // Shadow check
             bool shadowcheck = false;
-            float params[2], param1, param2, closestParam = MAXFLOAT;
+            float param1, param2, closestParam = MAXFLOAT;
+
+            VecMath::vec2 params;
+
             Sphere shadowSphere;
 
             for (const Sphere& sphere : scene.spheresInScene) {
                 
-                memcpy(params, IntersectRaySphere(P, L, sphere), sizeof(params));
-                param1 = params[0];
-                param2 = params[1];
+                params = IntersectRaySphere(P, L, sphere);
+                param1 = params.x;
+                param2 = params.y;
+
                 if ((param1 > .001f && param1 < t_max && param1 < closestParam)) {
                     shadowcheck = true;
                     closestParam = param1;
@@ -77,8 +84,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
         
             // Specular
             if (spec != -1) {
-                float R[3];
-                memcpy(R, ReflectRay(L,N), sizeof(R));
+                VecMath::vec3 R = ReflectRay(L, N);
 
                 float r_dot_v = math.Dot(R, V);
                 if (r_dot_v > 0) {
@@ -98,22 +104,22 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
     return intensity;
 }
 
-float* RayTracer::ReflectRay(float R[3], float N[3]) {
+VecMath::vec3 RayTracer::ReflectRay(VecMath::vec3 R, VecMath::vec3 N) {
     // 2 * N * Dot(N, R) - R
-    float reflectedRay[3];
-    memcpy(reflectedRay, math.Subtract(math.Scale(N, 2 * math.Dot(R, N)), R), sizeof(reflectedRay));
-    return reflectedRay;
+    return math.Subtract(math.Scale(N, 2 * math.Dot(R, N)), R);
 }
 
 //-------------------------------------------------------------------------------------------------
 // O is the position of the camera
 // D is the direction of the ray from the camera to a point in the viewport
-float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
+VecMath::vec2 RayTracer::IntersectRaySphere(VecMath::vec3 O, VecMath::vec3 D, Sphere sphere) {
+
     float r = sphere.radius;
 
     // CO = O - sphere.center 
-    float CO[3];
-    memcpy(CO, math.Subtract(O, sphere.center), sizeof(CO));
+
+    VecMath::vec3 C = math.Vector3(sphere.center[0], sphere.center[1], sphere.center[2]);
+    VecMath::vec3 CO = math.Subtract(O, C);
     
     // a^2x + bx + c
     float a = math.Dot(D, D);
@@ -123,38 +129,39 @@ float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
     // No real solution, therefore the ray does not intersect the sphere
     float discriminant = b * b - 4 * a * c;
     if (discriminant < 0) {
-        return new float[2] {MAXFLOAT, MAXFLOAT};
+        return math.Vector2(MAXFLOAT, MAXFLOAT);
     }
 
     // Quadratic formula to find two positions where the ray intersects the sphere
     float param_t1 = (-b + (float)sqrt(discriminant)) / (2 * a);
     float param_t2 = (-b - (float)sqrt(discriminant)) / (2 * a);
 
-    return new float[2] {param_t1, param_t2};
+    return math.Vector2(param_t1, param_t2);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 
 // Determine color of ray passing through the viewport position seen from the camera position
-float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_param, Scene scene, float recursionDepth) {
-    float closestParam = MAXFLOAT, param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
-    float parameters[2] = { param_t1, param_t2 };
+VecMath::vec3 RayTracer::TraceRay(VecMath::vec3 O, VecMath::vec3 D, float min_param, float max_param, Scene scene, float recursionDepth) {
 
-    VecMath::vec3 VectorO = math.Vector3(O[0], O[1], O[2]);
-    VecMath::vec3 VectorD = math.Vector3(D[0], D[1], D[2]);
-    
+    float closestParam = MAXFLOAT, param_t1 = MAXFLOAT, param_t2 = MAXFLOAT;
+
     Sphere closestSphere;
     bool closestSphereNull = true;
+
+    VecMath::vec2 parameters;
+
 
     // If no circle is intersected by a ray, then return the background color
     // Else, return the color of the closest circle to the camera at that point in the viewport
 
     for (const Sphere &sphere : scene.spheresInScene) {
 
-        memcpy(parameters, IntersectRaySphere(O, D, sphere), sizeof(parameters));
+        parameters = IntersectRaySphere(O, D, sphere);
 
-        param_t1 = parameters[0], param_t2 = parameters[1];
+        param_t1 = parameters.x;
+        param_t2 = parameters.y;
 
         if (param_t1 > min_param && param_t1 < max_param && param_t1 < closestParam) {
 
@@ -175,25 +182,23 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
 
     if (closestSphereNull) {
 
-        return new float[3] BACKGROUNDCOLOR;
+        return math.Vector3(BACKGROUNDCOLOR);
 
     }
     
     // Calculate point of intersection of ray with sphere
+   
     // P = O + t * D
-    float posX = O[0] + closestParam * D[0];
-    float posY = O[1] + closestParam * D[1];
-    float posZ = O[2] + closestParam * D[2];
 
+    VecMath::vec3 P = math.Add(O, math.Scale(D, closestParam));
+    
     // Point of intersection P
     
-    VecMath::vec3 VectorP = math.Vector3(posX, posY, posZ);
-
     // Calculate surface normal at that intersection point 
     // N = P - closestSphere.center
     
     VecMath::vec3 VectorC = math.Vector3(closestSphere.center[0], closestSphere.center[1], closestSphere.center[2]);
-    VecMath::vec3 VectorN = math.Subtract(VectorP, VectorC);
+    VecMath::vec3 VectorN = math.Subtract(P, VectorC);
 
     // Normalize normal vector to unit length of 1
     
@@ -201,8 +206,7 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
 
     // Color * Intensity from ComputeLighting()
 
-    float localColor[3];
-    float scalar = ComputeLighting(VectorP, VectorN, scene, math.Scale(VectorD, -1), closestSphere.specularExponent);
+    float scalar = ComputeLighting(P, VectorN, scene, math.Scale(D, -1), closestSphere.specularExponent);
     VecMath::vec3 localColor = math.Scale(VectorC, scalar);
 
     // if recursion limit is reached or object is not reflective, base case
@@ -213,22 +217,25 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
     }
     
     // Reflections
-    float R[3],  reflectedColor[3];
-    memcpy(R,ReflectRay(math.Scale(D,-1), N), sizeof(R));
+    VecMath::vec3 VectorR, reflectedColor;
+    
+    VectorR = ReflectRay(math.Scale(D, -1), VectorN);
 
-    float* temp = TraceRay(P, R, .001f, MAXFLOAT, scene, recursionDepth - 1);
-    memcpy(reflectedColor, temp, sizeof(reflectedColor));
+    reflectedColor = TraceRay(P, VectorR, .001f, MAXFLOAT, scene, recursionDepth - 1);
 
-    float factor1[3], factor2[3], finalColor[3], term = (1.0f - r);
+    float term = (1.0f - r);
 
     // Local Color * (1 - r)
-    memcpy(factor1, math.Scale(localColor, term), sizeof(factor1));
+
+    VecMath::vec3 localComponent = math.Scale(localColor, term);
 
     // Reflected Color * (r)
-    memcpy(factor2, math.Scale(reflectedColor, r), sizeof(factor2));
+
+    VecMath::vec3 reflectedComponent = math.Scale(reflectedColor, r);
 
     // factor1 + factor2
-    memcpy(finalColor, math.Add(factor1, factor2), sizeof(finalColor));
+
+    VecMath::vec3 finalColor = math.Add(localComponent, reflectedComponent);
 
     // Local Color * (1 - r) + reflected color * r
     return finalColor;

@@ -43,7 +43,7 @@
 #include <array> // gives std::array used in RayTracer.cpp to compare sphere color to background
 
 #define MAXFLOAT 4294967296.0f
-#define BACKGROUNDCOLOR {0, 0, 0}
+#define BACKGROUNDCOLOR 0, 0, 0
 
 
 class RayTracer {
@@ -56,20 +56,20 @@ public:
     // Scene holds data about the spheres and lights in the game 
     // Vector Point to Cam V where the camera is positioned relative to the object (for specular)
     // Specular Exponent S is the exponent that the cosine of the angle between V and R, the reflection of the Light direction vector, is raised to; depends on material property of the sphere 
-    float ComputeLighting(float pointOfIntersection[3], float normal[3], Scene scene, float pointTocam[3], float specularExponent);
+    float ComputeLighting(VecMath::vec3 pointOfIntersection, VecMath::vec3 normal, Scene scene, VecMath::vec3 pointTocam, float specularExponent);
 
     // Position (x, y, z) Camera Pos holds the coords where the camera is located
     // Vector RayDirection is the direction of the light ray from the camera thru the viewport to the sphere
     // Sphere sphere is the current sphere being checked
-    float* IntersectRaySphere(float cameraPos[3], float rayDirection[3], Sphere sphere);
+    VecMath::vec2 IntersectRaySphere(VecMath::vec3 cameraPos, VecMath::vec3 rayDirection, Sphere sphere);
 
     // Camera Pos is the original cam position
     // Ray direction is the direction of light determined by Point on Viewport - Camera Position 
     // min and max parameters determine which segments of the light ray we want to look at
     // Scene includes the lights and objects in the scene
-    float* TraceRay(float cameraPos[3], float rayDirection[3], float min_param, float max_param, Scene scene, float recursionDepth);
+    VecMath::vec3 TraceRay(VecMath::vec3 cameraPos, VecMath::vec3 rayDirection, float min_param, float max_param, Scene scene, float recursionDepth);
 
-    float* ReflectRay(float R[3], float N[3]);
+    VecMath::vec3 ReflectRay(VecMath::vec3 R, VecMath::vec3 N);
 
     
 
