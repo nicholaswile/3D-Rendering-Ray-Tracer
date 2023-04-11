@@ -132,9 +132,18 @@ float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
     memcpy(CO, math.Subtract(O, sphere.center), sizeof(CO));
     
     // a^2x + bx + c
-    float a = math.Dot(D, D);
-    float b = 2 * math.Dot(CO, D);
-    float c = math.Dot(CO, CO) - r * r;
+    VecMath::vec3 VectorD, VectorCO;
+    VectorD = { D[0], D[1], D[2] };
+    VectorCO = { CO[0], CO[1], CO[2] };
+
+    //float a = math.Dot(D, D);
+    float a = math.Dot(VectorD, VectorD);
+    
+    //float b = 2 * math.Dot(CO, D);
+    float b = 2 * math.Dot(VectorCO, VectorD);
+
+    //float c = math.Dot(CO, CO) - r * r;
+    float c = math.Dot(VectorCO, VectorCO) - r * r;
 
     // No real solution, therefore the ray does not intersect the sphere
     float discriminant = b * b - 4 * a * c;
