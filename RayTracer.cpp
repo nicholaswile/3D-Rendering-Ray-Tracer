@@ -23,7 +23,7 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
                 // L = light.position - P
                 float lightPos[3] = { light.position[0], light.position[1], light.position[2] };
 
-                memcpy(L, math.aTob(lightPos, P), sizeof(L));
+                memcpy(L, math.Subtract(lightPos, P), sizeof(L));
 
                 t_max = 1.0f;
             }
@@ -36,7 +36,11 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
             }
              
 
-            float n_dot_l = math.aDotb(N, L);
+            //float n_dot_l = math.Dot(N, L);
+            VecMath::vec3 VectorN, VectorL;
+            VectorN = { N[0], N[1], N[2] };
+            VectorL = { L[0], L[1], L[2] };
+            float n_dot_l = math.Dot(VectorN, VectorL);
             
 
             // Shadow check
@@ -80,7 +84,12 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
                 float R[3];
                 memcpy(R, ReflectRay(L,N), sizeof(R));
 
-                float r_dot_v = math.aDotb(R, V);
+                //float r_dot_v = math.Dot(R, V);
+                VecMath::vec3 VectorR, VectorV;
+                VectorR = { R[0], R[1], R[2] };
+                VectorV = { V[0], V[1], V[2] };
+                float r_dot_v = math.Dot(VectorR, VectorV);
+
                 if (r_dot_v > 0) {
                     intensity += light.intensity * (float)pow(r_dot_v / (math.Length(R) * math.Length(V)), spec);
                 }
@@ -100,8 +109,15 @@ float RayTracer::ComputeLighting(float P[3], float N[3], Scene scene, float V[3]
 
 float* RayTracer::ReflectRay(float R[3], float N[3]) {
     // 2 * N * Dot(N, R) - R
+     
     float reflectedRay[3];
-    memcpy(reflectedRay, math.aTob(math.Scale(N, 2 * math.aDotb(R, N)), R), sizeof(reflectedRay));
+    //float r_dot_n = math.Dot(R, N);
+    VecMath::vec3 VectorR, VectorN;
+    VectorR = { R[0], R[1], R[2] };
+    VectorN = { N[0], N[1], N[2] };
+    float r_dot_n = math.Dot(VectorR, VectorN);
+
+    memcpy(reflectedRay, math.Subtract(math.Scale(N, 2 * r_dot_n), R), sizeof(reflectedRay));
     return reflectedRay;
 }
 
@@ -113,12 +129,12 @@ float* RayTracer::IntersectRaySphere(float O[3], float D[3], Sphere sphere) {
 
     // CO = O - sphere.center 
     float CO[3];
-    memcpy(CO, math.aTob(O, sphere.center), sizeof(CO));
+    memcpy(CO, math.Subtract(O, sphere.center), sizeof(CO));
     
     // a^2x + bx + c
-    float a = math.aDotb(D, D);
-    float b = 2 * math.aDotb(CO, D);
-    float c = math.aDotb(CO, CO) - r * r;
+    float a = math.Dot(D, D);
+    float b = 2 * math.Dot(CO, D);
+    float c = math.Dot(CO, CO) - r * r;
 
     // No real solution, therefore the ray does not intersect the sphere
     float discriminant = b * b - 4 * a * c;
@@ -180,7 +196,7 @@ float * RayTracer::TraceRay(float O[3], float D[3], float min_param, float max_p
     // Calculate surface normal at that intersection point 
     // N = P - closestSphere.center
     float N[3];
-    memcpy(N, math.aTob(P, closestSphere.center), sizeof(N));
+    memcpy(N, math.Subtract(P, closestSphere.center), sizeof(N));
 
     // Normalize normal vector to unit length of 1
     memcpy(N, math.Scale(N, 1.0f/math.Length(N)), sizeof(N));
