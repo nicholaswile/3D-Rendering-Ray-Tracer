@@ -1,13 +1,13 @@
 #pragma once
-
+#include"VecMath.h"
 class Camera {
 public:
     Camera();
     float* GetPosition() {
         return m_Position;
     }
-    float* GetOrientation() {
-        return m_Orientation;
+    VecMath::Mat3x3 GetOrientation() {
+        return m_Rotation;
     }
     float GetViewportWidth() {
         return m_viewportWidth;
@@ -29,10 +29,8 @@ public:
         m_Position[1] = y;
         m_Position[2] = z;
     }
-    void SetOrientation(float x, float y, float z) {
-        m_Orientation[0] = x;
-        m_Orientation[1] = y;
-        m_Orientation[2] = z;
+    void SetOrientation(VecMath::Mat3x3 m) {
+        m_Rotation = m;
     }
     void SetViewportWidth(float width) {
         m_viewportWidth = width;
@@ -59,7 +57,7 @@ public:
     }
 private:
     float m_Position[3];
-    float m_Orientation[3];
+    VecMath::Mat3x3 m_Rotation;
     float m_viewportWidth;
     float m_viewportHeight;
     float m_viewportDistance; // the distance between the camera and viewport/projection plane

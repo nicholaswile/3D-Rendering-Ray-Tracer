@@ -1,6 +1,6 @@
 #include <windows.h> // gives ConsoleWindow and SetPixel
 #include "RayTracer.h"
-
+#include "VecMath.h"
 #define MAXFLOAT 4294967296.0f
 
 void DrawPixel(HDC hdc, int viewportX, int viewportY, int screenWidth, int screenHeight, float color[3]) {
@@ -32,6 +32,8 @@ int main()
     RayTracer renderer;
     renderer.scene.CreateScene();
 
+    VecMath math;
+
     HDC hdc = GetDC(GetConsoleWindow());
 
     float recursionDepth = 3;
@@ -47,7 +49,10 @@ int main()
     while (true) {
         for (int x = - screenWidth / 2; x <= screenWidth / 2; x++) {
             for (int y = -screenHeight / 2; y <= screenHeight / 2; y++) {
-                memcpy(D, renderer.camera.CanvasToViewport(x, y), sizeof(D));
+                memcpy(D, 
+                        math.MultMatByVec(renderer.camera.CanvasToViewport(x, y), renderer.camera.GetOrientation()
+                        ),
+                    sizeof(D));
                 memcpy(color, renderer.TraceRay(renderer.camera.GetPosition(), D, 1, MAXFLOAT, renderer.scene, recursionDepth), sizeof(color));
                 DrawPixel(hdc, x, y, screenWidth, screenHeight, color);
             }
