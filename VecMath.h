@@ -21,7 +21,7 @@ public:
     vec2 Vector2(float x, float y);
 
     float* Subtract(float a[3], float b[3]);
-    float Dot(float a[3], float b[3]);
+    //float Dot(float a[3], float b[3]);
     float Dot(vec3 a, vec3 b);
     float* Scale(float a[3], float scalar);
     float* Add(float a[3], float b[3]);

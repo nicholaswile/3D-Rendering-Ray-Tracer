@@ -14,9 +14,9 @@ float* VecMath::Subtract(float a[3], float b[3])
     return new float[3] {a[0] - b[0], a[1] - b[1], a[2] - b[2]};
 }
 
-float VecMath::Dot(float a[3], float b[3]) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
+//float VecMath::Dot(float a[3], float b[3]) {
+//    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+//}
 
 float VecMath::Dot(VecMath::vec3 a, VecMath::vec3 b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -35,5 +35,6 @@ float* VecMath::Add(float a[3], float b[3]) {
 }
 
 float VecMath::Length(float a[3]) {
-    return sqrt(Dot(a, a));
+    VecMath::vec3 VectorA = { a[0], a[1], a[2] };
+    return sqrt(Dot(VectorA, VectorA));
 }
