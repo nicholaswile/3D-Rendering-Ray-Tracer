@@ -4,13 +4,30 @@
 #define SCREENHEIGHT 1080
 
 Camera::Camera() {
-    SetPosition(2, 0, 0);
-    // for default, set to 1, 0, 0, 0, 1, 0, 0, 0, 1
+    // Default
+    SetPosition(0, 0, 0);
+
+    // Uncomment to test changing position
+    
+    // SetPosition(2, 0, 0);
+
+    // Default
+    SetOrientation(VecMath::Mat3x3{
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
+        });
+
+    // Uncomment to test changing rotation
+
+    /*
     SetOrientation(VecMath::Mat3x3{
         .7, 0, -.7,
         0, 1, 0,
         .7, 0, .7
         });
+    */
+
     float vpX = (float) SCREENWIDTH / (float) SCREENHEIGHT;
     SetViewportWidth(vpX);
     SetViewportHeight(1);
