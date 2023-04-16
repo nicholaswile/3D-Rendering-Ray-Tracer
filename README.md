@@ -1,27 +1,51 @@
 # 3D Rendering Ray Tracer
 This is a ray tracer for rendering simple 3D scenes built from scratch using C++ and the Windows API to draw pixels directly to the console. It currently implements ray intersection (sphere); ambient, diffuse, and specular lighting models; and shadows. The 3D math / linear algebra functions are also custom made. 
 
+## Reflections
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229447472-9fab30fb-5302-4013-99dd-8a69f415148b.png">
+
+Another view with the center sphere translated down. This makes it easier for us to view the reflections in the neighboring spheres.
+
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229448954-a192b380-1767-4ec5-a274-88d111487388.png">
+
 ## Shadows
-<img width="600" src="https://user-images.githubusercontent.com/74445404/229344983-2e3027b3-f02c-4f9b-8b37-f08d0ccf6852.png">
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229344983-2e3027b3-f02c-4f9b-8b37-f08d0ccf6852.png">
 
 ## Lighting
 ### Specular
-<img width="600" src="https://user-images.githubusercontent.com/74445404/229345083-a752cac3-74b9-441c-be89-cf27cf437a71.png">
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229345083-a752cac3-74b9-441c-be89-cf27cf437a71.png">
 
 ### Diffuse
-<img width="600" src="https://user-images.githubusercontent.com/74445404/229345168-d5d4e442-fbf4-4144-835f-6635343a92a9.png">
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229345168-d5d4e442-fbf4-4144-835f-6635343a92a9.png">
 
 ### Ambient
-<img width="600" src="https://user-images.githubusercontent.com/74445404/229345278-884f8b99-ea17-4449-a5cb-aad9e6b0e11c.png">
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229345278-884f8b99-ea17-4449-a5cb-aad9e6b0e11c.png">
 
 ## Flat Color 
 Note that flat color looks the same as ambient lighting. This is because the intensity of the ambient light in the previous photo is set to 1.0f, so the effect of the ambient light on the scene is multiplying the RGB color values of each sphere by 1.0f. The result is the same. 
 
-<img width="600" src="https://user-images.githubusercontent.com/74445404/229345460-cd4c33f9-8b84-4048-abcd-324774c97abb.png">
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229345460-cd4c33f9-8b84-4048-abcd-324774c97abb.png">
 
 ---
 
 # Funny troubleshooting pictures and old updates
+
+## Reflections
+
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229447854-c1dc52eb-237d-4eac-8b57-d92ba18195c5.png">
+
+Only the reflected color is returned without accounting for the local color and reflectiveness.
+
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229447890-ef550cab-ae66-44cd-9790-56f023f7f628.png">
+
+All spheres are the same color (by mistake). 
+
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229448003-bb9084fe-3d4c-425c-a0db-f42de12e6385.png">
+
+All spheres glow an intense red color (by mistake). 
+
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/229447944-6a4535f6-0dba-4b95-b894-052a3fab30f6.png">
+
 
 ## Lighting
 
