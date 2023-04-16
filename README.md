@@ -1,6 +1,11 @@
 # 3D Rendering Ray Tracer
 This is a ray tracer for rendering simple 3D scenes built from scratch using C++ and the Windows API to draw pixels directly to the console. It currently implements ray intersection (sphere); ambient, diffuse, and specular lighting models; and shadows. The 3D math / linear algebra functions are also custom made. 
 
+## Camera rotation
+<img width="1000" src="https://user-images.githubusercontent.com/74445404/232265543-fd4bff43-5ec8-4adf-9265-39d5d90d37d9.png">
+
+Camera rotation is defined using a 3x3 matrix structure.
+
 ## Reflections
 <img width="1000" src="https://user-images.githubusercontent.com/74445404/229447472-9fab30fb-5302-4013-99dd-8a69f415148b.png">
 
